@@ -20,6 +20,7 @@ let lexemeAsString lexbuf =
 let keyword s =   
     match s with
     | "char"    -> CHAR    // 返回对应的Token ,Token 定义于 CPar.fsl 文件中
+    | "String"  -> STRING
     | "else"    -> ELSE
     | "false"   -> CSTBOOL 0
     | "if"      -> IF
@@ -30,10 +31,17 @@ let keyword s =
     | "return"  -> RETURN
     | "true"    -> CSTBOOL 1
     | "void"    -> VOID 
-    | "while"   -> WHILE         
+    | "while"   -> WHILE     
+    | "dowhile" -> DOWHILE 
+    | "do"      -> DO  
+    | "for"     -> FOR   
+    | "switch"  -> SWITCH
+    | "case"    -> CASE    
+    | "default" -> DEFAULT
+    | "break"   -> BREAK
+    | "continue"-> CONTINUE 
     | _         -> NAME s   // 缺省情况，是标识符的名字，如 函数名，变量名等
                             // 当所有的关键字没有匹配成功时，则当成标识符
-// 字符串转义符处理函数
 let cEscape s = 
     match s with 
     | "\\\\" -> '\\'
