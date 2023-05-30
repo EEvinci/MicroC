@@ -12,6 +12,9 @@ open FSharp.Text.Parsing.ParseHelpers
 *)
 open Absyn
 
+let first  (a, _, _) = a    // 取出对应的typ***
+let second (_, b, _) = b    // 取出对应的string***
+let third  (_, _, c) = c    // 取出对应的expr***
 // Vardesc 返回的是一个 元组 (g,s)
 // g是类型构造函数，s是变量名
 // compose1 函数 取出 类型构造子 g，用类型复合机制构造类型。
@@ -47,6 +50,15 @@ type token =
   | TIMES
   | DIV
   | MOD
+  | SELFPLUS
+  | SELFMINUS
+  | SELFTIMES
+  | SELFDIV
+  | SELFMOD
+  | ADDONE
+  | MINUSONE
+  | QUESTION
+  | COLON
   | CHAR
   | ELSE
   | IF
@@ -57,8 +69,18 @@ type token =
   | RETURN
   | VOID
   | WHILE
+  | FOR
+  | STRING
+  | BREAK
+  | CONTINUE
+  | DOWHILE
+  | DO
+  | CASE
+  | SWITCH
+  | DEFAULT
   | CSTSTRING of (string)
   | NAME of (string)
+  | CSTCHAR of (char)
   | CSTINT of (int)
   | CSTBOOL of (int)
 // This type is used to give symbolic names to token indexes, useful for error messages
