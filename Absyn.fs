@@ -1,19 +1,14 @@
-(* File MicroC/Absyn.fs
-   Abstract syntax of micro-C, an imperative language.
-   sestoft@itu.dk 2009-09-25
-
-   Must precede Interp.fs, Comp.fs and Contcomp.fs in Solution Explorer
- *)
-
 module Absyn
 
 // 基本类型
 // 注意，数组、指针是递归类型
-// 这里没有函数类型，注意与上次课的 MicroML 对比
+// 这里没有函数类型
 type typ =
   | TypI                             (* Type int                    *)
   | TypC                             (* Type char                   *)
+  | TypeFloat                        (* Type float                   *)
   | TypA of typ * int option         (* Array type                  *)
+  | TypS                             (* Type string                *)
   | TypP of typ                      (* Pointer type                *)
                                                                    
 and expr =                           // 表达式，右值                                                
@@ -21,6 +16,9 @@ and expr =                           // 表达式，右值
   | Assign of access * expr          (* x=e  or  *p=e  or  a[e]=e   *)
   | Addr of access                   (* &x   or  &*p   or  &a[e]    *)
   | CstI of int                      (* Constant                    *)
+   ConstChar of char                (*constant char*) 
+  | ConstString of string            (*constant string*)
+  | ConstFloat of float32            (*constant float*) // Zhangjz
   | Prim1 of string * expr           (* Unary primitive operator    *)
   | Prim2 of string * expr * expr    (* Binary primitive operator   *)
   | Andalso of expr * expr           (* Sequential and              *)
