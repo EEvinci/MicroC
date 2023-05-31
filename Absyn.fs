@@ -16,11 +16,14 @@ and expr =                           // 表达式，右值
   | Assign of access * expr          (* x=e  or  *p=e  or  a[e]=e   *)
   | Addr of access                   (* &x   or  &*p   or  &a[e]    *)
   | CstI of int                      (* Constant                    *)
-   ConstChar of char                (*constant char*) 
+  | ConstChar of char                (*constant char*) 
   | ConstString of string            (*constant string*)
   | ConstFloat of float32            (*constant float*) // Zhangjz
+  | SimpleOpt of  string * access * expr
+  | Print of string * expr           (* 输出****)
   | Prim1 of string * expr           (* Unary primitive operator    *)
   | Prim2 of string * expr * expr    (* Binary primitive operator   *)
+  | Prim3 of expr * expr * expr      (*         三目运算符           *)
   | Andalso of expr * expr           (* Sequential and              *)
   | Orelse of expr * expr            (* Sequential or               *)
   | Call of string * expr list       (* Function call f(...)        *)
