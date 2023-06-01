@@ -326,6 +326,16 @@ and eval e locEnv gloEnv store : int * store =
         (res, setSto store2 loc res)
     | CstI i -> (i, store)
     | Addr acc -> access acc locEnv gloEnv store
+    // Print函数
+    | Print (op , e1) ->    let (i1,store1) = 
+                                eval e1 locEnv gloEnv store
+                            let res = 
+                                match op with
+                                | "%c"   -> (printf "%c " (char i1); i1)
+                                | "%d"   -> (printf "%d " i1; i1)  
+                                | "%s"   -> (printf "%s " (string i1); i1) 
+                                | _ -> failwith ("unknown primitive " + op)
+                            (res, store1)
     | Prim1 (ope, e1) ->
         let (i1, store1) = eval e1 locEnv gloEnv store
 
@@ -341,6 +351,25 @@ and eval e locEnv gloEnv store : int * store =
             | _ -> failwith ("unknown primitive " + ope)
 
         (res, store1)
+        
+        // SimpleOpt运算符函数
+    | SimpleOpt (ope,acc,e) ->
+        let  (loc, store1) = access acc locEnv gloEnv store // 取acc地址
+        let  (i1)  = getSto store1 loc
+        let  (i2, store2) = eval e locEnv gloEnv store
+        let  res =
+            match ope with
+            | "Z++" -> i1 + i2
+            | "++Z" -> i1 + i2
+            | "Z--" -> i1 - i2
+            | "--Z" -> i1 - i2
+            | "+="  -> i1 + i2
+            | "-="  -> i1 - i2
+            | "*="  -> i1 * i2
+            | "/="  -> i1 / i2
+            | "%="  -> i1 % i2
+            | _ -> failwith ("unknown primitive " + ope)
+        (res, setSto store2 loc res)
     | Prim2 (ope, e1, e2) ->
         let (i1, store1) = eval e1 locEnv gloEnv store
         let (i2, store2) = eval e2 locEnv gloEnv store1

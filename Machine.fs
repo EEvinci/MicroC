@@ -178,3 +178,47 @@ let CODECSTC    = 27;
 [<Literal>]
 let CODECSTS    = 28;
 
+(* Bytecode emission, first pass: build environment that maps 
+   each label to an integer address in the bytecode.
+ *)
+//获得标签在机器码中的地址
+let makelabenv (addr, labenv) instr = 
+    match instr with
+    // 记录当前 (标签, 地址) ==> 到 labenv中
+    | Label lab      -> (addr, (lab, addr) :: labenv)
+    | FLabel (m,lab)      -> (addr, (lab, addr) :: labenv)
+    | CSTI i         -> (addr+2, labenv)
+    | CSTC i         -> (addr+2, labenv)
+    | CSTS str       -> (addr+1+str.Length, labenv)
+    | GVAR i         -> (addr+2, labenv)
+    | OFFSET i       -> (addr+2, labenv)
+    | ADD            -> (addr+1, labenv)
+    | SUB            -> (addr+1, labenv)
+    | MUL            -> (addr+1, labenv)
+    | DIV            -> (addr+1, labenv)
+    | MOD            -> (addr+1, labenv)
+    | EQ             -> (addr+1, labenv)
+    | LT             -> (addr+1, labenv)
+    | NOT            -> (addr+1, labenv)
+    | DUP            -> (addr+1, labenv)
+    | SWAP           -> (addr+1, labenv)
+    | LDI            -> (addr+1, labenv)
+    | STI            -> (addr+1, labenv)
+    | GETBP          -> (addr+1, labenv)
+    | GETSP          -> (addr+1, labenv)
+    | INCSP m        -> (addr+2, labenv)
+    | GOTO lab       -> (addr+2, labenv)
+    | IFZERO lab     -> (addr+2, labenv)
+    | IFNZRO lab     -> (addr+2, labenv)
+    | CALL(m,lab)    -> (addr+3, labenv)
+    | TCALL(m,n,lab) -> (addr+4, labenv)
+    | RET m          -> (addr+2, labenv)
+    | PRINTI         -> (addr+1, labenv)
+    | PRINTC         -> (addr+1, labenv)
+    | LDARGS  m       -> (addr+1, labenv)
+    | STOP           -> (addr+1, labenv)
+
+(* Bytecode emission, second pass: output bytecode as integers *)
+
+//getlab 是得到标签所在地址的函数
+//let getlab lab = lookup labenv lab
