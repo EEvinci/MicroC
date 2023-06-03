@@ -36,6 +36,8 @@ and access =                         //左值，存储的位置
 and stmt =                                                         
   | If of expr * stmt * stmt         (* Conditional                 *)
   | While of expr * stmt             (* While loop                  *)
+  | DoWhile of  stmt * expr          (* DoWhile 循环***                *)
+  | For of expr * expr * expr * stmt (* For 循环*** *)
   | Expr of expr                     (* Expression statement   e;   *)
   | Return of expr option            (* Return from method          *)
   | Block of stmtordec list          (* Block: grouping and scope   *)

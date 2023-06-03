@@ -308,10 +308,31 @@ let rec exec stmt (locEnv: locEnv) (gloEnv: gloEnv) (store: store) : store =
 
     | Return _ -> failwith "return not implemented" // 解释器没有实现 return
 
-and stmtordec stmtordec locEnv gloEnv store =
+    | Myctrl ctrl -> 
+        match ctrl with
+            | Return x  -> 
+                if x.IsSome then 
+                    let retVal = eval x.Value locEnv gloEnv store in
+                        (snd retVal, Some(Return (Some (CstI (fst retVal))))) 
+                else (store, Some(ctrl))
+            | _         -> (store, Some(ctrl))    
+    // | Return _ -> failwith "return not implemented" // 解释器没有实现 return
+and stmtordec stmtordec locEnv gloEnv store (controlStat:controlStat)=
     match stmtordec with
-    | Stmt stmt -> (locEnv, exec stmt locEnv gloEnv store)
-    | Dec (typ, x) -> allocate (typ, x) locEnv store
+    | Stmt stmt -> let (e, (s, c)) = (locEnv, exec stmt locEnv gloEnv store controlStat) in (e, s, c)
+    | Dec (typ, x) -> 
+        let (e,s) = (allocate (typ, x) locEnv store) in (e,s,controlStat)
+    | DecAndAssign (typ, x, e) -> let (loc,store1) = allocate (typ, x) locEnv store // loc是环境 
+                                  let (loc1,store2) = access (AccVar x) loc gloEnv store1 // 取得x的值放到 loc1中
+                                  let (loc2,store3) = 
+                                        match e with
+                                        | ConstString s ->  let rec sign index stores=
+                                                                if index<s.Length then
+                                                                    sign (index+1) ( setSto stores (loc1-index-1) (int (s.Chars(index) ) ) )
+                                                                else stores
+                                                            ( s.Length   ,sign 0 store2) 
+                                        | _ ->  eval e loc gloEnv  store2
+                                  (loc, setSto store3 loc1 loc2,controlStat)                   
 
 (* Evaluating micro-C expressions *)
 
