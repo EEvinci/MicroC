@@ -293,20 +293,46 @@ let rec exec stmt (locEnv: locEnv) (gloEnv: gloEnv) (store: store) : store =
         // _ 表示丢弃e的值,返回 变更后的环境store1
         let (_, store1) = eval e locEnv gloEnv store
         store1
+        
+    | Switch (e,body) ->  
+                let (res, store0) = eval e locEnv gloEnv store
+                let rec loop store1 controlStat = 
+                    match controlStat with
+                    | Some(Break)           -> (store1, None)          // 如果有遇到的break，结束该次循环并清除break标记
+                    | Some(Return _)        -> (store1, controlStat)   // 如果有未跳出的函数，
+                    | _                     ->                         // continue或者没有设置控制状态时，先检查条件然后继续运行
+                        let rec pick list =
+                            match list with
+                            | Case(e1,body1) :: tail -> 
+                                let (res2, store2) = eval e1 locEnv gloEnv store1
+                                if res2=res then exec body1 locEnv gloEnv store2 None
+                                            else pick tail
+                            | [] -> (store1,None)
+                            | Default( body1 ) :: tail -> 
+                                let (res3,store3) = exec body1 locEnv gloEnv store1 None
+                                pick tail
+                        (pick body)
+                loop store0 controlStat
+    | Case (e,body) -> exec body locEnv gloEnv store controlStat
 
     | Block stmts ->
 
         // 语句块 解释辅助函数 loop
-        let rec loop ss (locEnv, store) =
-            match ss with
-            | [] -> store
-            //语句块,解释 第1条语句s1
-            // 调用loop 用变更后的环境 解释后面的语句 sr.
-            | s1 :: sr -> loop sr (stmtordec s1 locEnv gloEnv store)
-
-        loop stmts (locEnv, store)
-
-    | Return _ -> failwith "return not implemented" // 解释器没有实现 return
+        let rec loop ss (locEnv, store,(controlStat:controlStat)) =
+            if controlStat.IsSome then
+                let stat = controlStat.Value in
+                    match stat with
+                        | Break
+                        | Continue  -> (store, controlStat)
+                        | Return x  -> (store, controlStat)
+            else
+                 match ss with
+                        | [] -> (store, None)
+                        //语句块,解释 第1条语句s1
+                        // 调用loop 用变更后的环境 解释后面的语句 sr.
+                        | s1 :: sr -> loop sr (stmtordec s1 locEnv gloEnv store controlStat)
+                   
+        loop stmts (locEnv, store, controlStat)
 
     | Myctrl ctrl -> 
         match ctrl with

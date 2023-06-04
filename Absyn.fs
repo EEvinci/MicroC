@@ -38,10 +38,13 @@ and stmt =
   | While of expr * stmt             (* While loop                  *)
   | DoWhile of  stmt * expr          (* DoWhile 循环***                *)
   | For of expr * expr * expr * stmt (* For 循环*** *)
+  | Switch of expr * stmt list
+  | Case of expr * stmt 
+  | Default of stmt 
   | Expr of expr                     (* Expression statement   e;   *)
-  | Return of expr option            (* Return from method          *)
+  | Myctrl of control                (* 填加control模块，添加break、continue部分****)
   | Block of stmtordec list          (* Block: grouping and scope   *)
-  // 语句块内部，可以是变量声明 或语句的列表                                                              
+  // 语句块内部，可以是变量声明 或语句的列表                                                             
 
 and stmtordec =                                                    
   | Dec of typ * string              (* Local variable declaration  *)
