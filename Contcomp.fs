@@ -103,6 +103,17 @@ let rec addCST i C =
     | (0, IFNZRO lab :: C1) -> C1
     | (_, IFNZRO lab :: C1) -> addGOTO lab C1
     | _                     -> CSTI i :: C
+
+let rec addCSTC i C =
+    match (i, C) with
+    | _                     -> (CSTC ((int32)(System.BitConverter.ToInt16(System.BitConverter.GetBytes(char(i)), 0)))) :: C
+
+let rec addCSTS (s:string) C =
+    match (s, C) with
+    | _                     -> let mutable list =[];
+                               for i = 0 to s.Length do
+                                   list <- (int (s.Chars(i)))::list
+                               (CSTS list) :: C
             
 (* ------------------------------------------------------------------- *)
 

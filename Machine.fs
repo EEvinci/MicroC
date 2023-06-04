@@ -221,4 +221,47 @@ let makelabenv (addr, labenv) instr =
 (* Bytecode emission, second pass: output bytecode as integers *)
 
 //getlab 是得到标签所在地址的函数
-//let getlab lab = lookup labenv lab
+//let getlab lab = lookup labenv lab  
+
+let rec emitints getlab instr ints = 
+    match instr with
+    | Label lab      -> ints
+    | FLabel (m,lab) -> ints
+    | CSTI i         -> CODECSTI   :: i :: ints
+    | CSTC i         -> CODECSTC   :: i :: ints
+    | CSTS str       -> CODECSTS   :: str    @ ints
+    | GVAR i         -> CODECSTI   :: i :: ints
+    | OFFSET i       -> CODECSTI   :: i :: ints
+    | ADD            -> CODEADD    :: ints
+    | SUB            -> CODESUB    :: ints
+    | MUL            -> CODEMUL    :: ints
+    | DIV            -> CODEDIV    :: ints
+    | MOD            -> CODEMOD    :: ints
+    | EQ             -> CODEEQ     :: ints
+    | LT             -> CODELT     :: ints
+    | NOT            -> CODENOT    :: ints
+    | DUP            -> CODEDUP    :: ints
+    | SWAP           -> CODESWAP   :: ints
+    | LDI            -> CODELDI    :: ints
+    | STI            -> CODESTI    :: ints
+    | GETBP          -> CODEGETBP  :: ints
+    | GETSP          -> CODEGETSP  :: ints
+    | INCSP m        -> CODEINCSP  :: m :: ints
+    | GOTO lab       -> CODEGOTO   :: getlab lab :: ints
+    | IFZERO lab     -> CODEIFZERO :: getlab lab :: ints
+    | IFNZRO lab     -> CODEIFNZRO :: getlab lab :: ints
+    | CALL(m,lab)    -> CODECALL   :: m :: getlab lab :: ints
+    | TCALL(m,n,lab) -> CODETCALL  :: m :: n :: getlab lab :: ints
+    | RET m          -> CODERET    :: m :: ints
+    | PRINTI         -> CODEPRINTI :: ints
+    | PRINTC         -> CODEPRINTC :: ints
+    | LDARGS m        -> CODELDARGS :: ints
+    | STOP           -> CODESTOP   :: ints
+
+
+(* Convert instruction list to int list in two passes:
+   Pass 1: build label environment
+   Pass 2: output instructions using label environment
+ *)
+ 
+//通过对 code 的两次遍历,完成汇编指令到机器指令的转换

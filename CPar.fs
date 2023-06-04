@@ -15,6 +15,7 @@ open Absyn
 let first  (a, _, _) = a    // 取出对应的typ***
 let second (_, b, _) = b    // 取出对应的string***
 let third  (_, _, c) = c    // 取出对应的expr***
+
 // Vardesc 返回的是一个 元组 (g,s)
 // g是类型构造函数，s是变量名
 // compose1 函数 取出 类型构造子 g，用类型复合机制构造类型。
@@ -110,6 +111,15 @@ type tokenId =
     | TOKEN_TIMES
     | TOKEN_DIV
     | TOKEN_MOD
+    | TOKEN_SELFPLUS
+    | TOKEN_SELFMINUS
+    | TOKEN_SELFTIMES
+    | TOKEN_SELFDIV
+    | TOKEN_SELFMOD
+    | TOKEN_ADDONE
+    | TOKEN_MINUSONE
+    | TOKEN_QUESTION
+    | TOKEN_COLON
     | TOKEN_CHAR
     | TOKEN_ELSE
     | TOKEN_IF
@@ -120,8 +130,18 @@ type tokenId =
     | TOKEN_RETURN
     | TOKEN_VOID
     | TOKEN_WHILE
+    | TOKEN_FOR
+    | TOKEN_STRING
+    | TOKEN_BREAK
+    | TOKEN_CONTINUE
+    | TOKEN_DOWHILE
+    | TOKEN_DO
+    | TOKEN_CASE
+    | TOKEN_SWITCH
+    | TOKEN_DEFAULT
     | TOKEN_CSTSTRING
     | TOKEN_NAME
+    | TOKEN_CSTCHAR
     | TOKEN_CSTINT
     | TOKEN_CSTBOOL
     | TOKEN_end_of_input
@@ -133,6 +153,7 @@ type nonTerminalId =
     | NONTERM_Topdecs
     | NONTERM_Topdec
     | NONTERM_Vardec
+    | NONTERM_VardecAndAssignment
     | NONTERM_Vardesc
     | NONTERM_Fundec
     | NONTERM_Paramdecs
@@ -147,8 +168,11 @@ type nonTerminalId =
     | NONTERM_AtExprNotAccess
     | NONTERM_Access
     | NONTERM_Exprs
+    | NONTERM_StmtCase
     | NONTERM_Exprs1
+    | NONTERM_ConstString
     | NONTERM_Const
+    | NONTERM_ConstChar
     | NONTERM_Type
 
 // This function maps tokens to integer indexes
@@ -179,20 +203,39 @@ let tagOfToken (t:token) =
   | TIMES  -> 22 
   | DIV  -> 23 
   | MOD  -> 24 
-  | CHAR  -> 25 
-  | ELSE  -> 26 
-  | IF  -> 27 
-  | INT  -> 28 
-  | NULL  -> 29 
-  | PRINT  -> 30 
-  | PRINTLN  -> 31 
-  | RETURN  -> 32 
-  | VOID  -> 33 
-  | WHILE  -> 34 
-  | CSTSTRING _ -> 35 
-  | NAME _ -> 36 
-  | CSTINT _ -> 37 
-  | CSTBOOL _ -> 38 
+  | SELFPLUS  -> 25 
+  | SELFMINUS  -> 26 
+  | SELFTIMES  -> 27 
+  | SELFDIV  -> 28 
+  | SELFMOD  -> 29 
+  | ADDONE  -> 30 
+  | MINUSONE  -> 31 
+  | QUESTION  -> 32 
+  | COLON  -> 33 
+  | CHAR  -> 34 
+  | ELSE  -> 35 
+  | IF  -> 36 
+  | INT  -> 37 
+  | NULL  -> 38 
+  | PRINT  -> 39 
+  | PRINTLN  -> 40 
+  | RETURN  -> 41 
+  | VOID  -> 42 
+  | WHILE  -> 43 
+  | FOR  -> 44 
+  | STRING  -> 45 
+  | BREAK  -> 46 
+  | CONTINUE  -> 47 
+  | DOWHILE  -> 48 
+  | DO  -> 49 
+  | CASE  -> 50 
+  | SWITCH  -> 51 
+  | DEFAULT  -> 52 
+  | CSTSTRING _ -> 53 
+  | NAME _ -> 54 
+  | CSTCHAR _ -> 55 
+  | CSTINT _ -> 56 
+  | CSTBOOL _ -> 57 
 
 // This function maps integer indexes to symbolic token ids
 let tokenTagToTokenId (tokenIdx:int) = 
@@ -222,22 +265,41 @@ let tokenTagToTokenId (tokenIdx:int) =
   | 22 -> TOKEN_TIMES 
   | 23 -> TOKEN_DIV 
   | 24 -> TOKEN_MOD 
-  | 25 -> TOKEN_CHAR 
-  | 26 -> TOKEN_ELSE 
-  | 27 -> TOKEN_IF 
-  | 28 -> TOKEN_INT 
-  | 29 -> TOKEN_NULL 
-  | 30 -> TOKEN_PRINT 
-  | 31 -> TOKEN_PRINTLN 
-  | 32 -> TOKEN_RETURN 
-  | 33 -> TOKEN_VOID 
-  | 34 -> TOKEN_WHILE 
-  | 35 -> TOKEN_CSTSTRING 
-  | 36 -> TOKEN_NAME 
-  | 37 -> TOKEN_CSTINT 
-  | 38 -> TOKEN_CSTBOOL 
-  | 41 -> TOKEN_end_of_input
-  | 39 -> TOKEN_error
+  | 25 -> TOKEN_SELFPLUS 
+  | 26 -> TOKEN_SELFMINUS 
+  | 27 -> TOKEN_SELFTIMES 
+  | 28 -> TOKEN_SELFDIV 
+  | 29 -> TOKEN_SELFMOD 
+  | 30 -> TOKEN_ADDONE 
+  | 31 -> TOKEN_MINUSONE 
+  | 32 -> TOKEN_QUESTION 
+  | 33 -> TOKEN_COLON 
+  | 34 -> TOKEN_CHAR 
+  | 35 -> TOKEN_ELSE 
+  | 36 -> TOKEN_IF 
+  | 37 -> TOKEN_INT 
+  | 38 -> TOKEN_NULL 
+  | 39 -> TOKEN_PRINT 
+  | 40 -> TOKEN_PRINTLN 
+  | 41 -> TOKEN_RETURN 
+  | 42 -> TOKEN_VOID 
+  | 43 -> TOKEN_WHILE 
+  | 44 -> TOKEN_FOR 
+  | 45 -> TOKEN_STRING 
+  | 46 -> TOKEN_BREAK 
+  | 47 -> TOKEN_CONTINUE 
+  | 48 -> TOKEN_DOWHILE 
+  | 49 -> TOKEN_DO 
+  | 50 -> TOKEN_CASE 
+  | 51 -> TOKEN_SWITCH 
+  | 52 -> TOKEN_DEFAULT 
+  | 53 -> TOKEN_CSTSTRING 
+  | 54 -> TOKEN_NAME 
+  | 55 -> TOKEN_CSTCHAR 
+  | 56 -> TOKEN_CSTINT 
+  | 57 -> TOKEN_CSTBOOL 
+  | 60 -> TOKEN_end_of_input
+  | 58 -> TOKEN_error
   | _ -> failwith "tokenTagToTokenId: bad token"
 
 /// This function maps production indexes returned in syntax errors to strings representing the non terminal that would be produced by that production
@@ -249,43 +311,43 @@ let prodIdxToNonTerminal (prodIdx:int) =
     | 3 -> NONTERM_Topdecs 
     | 4 -> NONTERM_Topdec 
     | 5 -> NONTERM_Topdec 
-    | 6 -> NONTERM_Vardec 
-    | 7 -> NONTERM_Vardesc 
-    | 8 -> NONTERM_Vardesc 
+    | 6 -> NONTERM_Topdec 
+    | 7 -> NONTERM_Vardec 
+    | 8 -> NONTERM_VardecAndAssignment 
     | 9 -> NONTERM_Vardesc 
     | 10 -> NONTERM_Vardesc 
     | 11 -> NONTERM_Vardesc 
-    | 12 -> NONTERM_Fundec 
-    | 13 -> NONTERM_Fundec 
-    | 14 -> NONTERM_Paramdecs 
-    | 15 -> NONTERM_Paramdecs 
-    | 16 -> NONTERM_Paramdecs1 
-    | 17 -> NONTERM_Paramdecs1 
-    | 18 -> NONTERM_Block 
-    | 19 -> NONTERM_StmtOrDecSeq 
-    | 20 -> NONTERM_StmtOrDecSeq 
+    | 12 -> NONTERM_Vardesc 
+    | 13 -> NONTERM_Vardesc 
+    | 14 -> NONTERM_Fundec 
+    | 15 -> NONTERM_Fundec 
+    | 16 -> NONTERM_Paramdecs 
+    | 17 -> NONTERM_Paramdecs 
+    | 18 -> NONTERM_Paramdecs1 
+    | 19 -> NONTERM_Paramdecs1 
+    | 20 -> NONTERM_Block 
     | 21 -> NONTERM_StmtOrDecSeq 
-    | 22 -> NONTERM_Stmt 
-    | 23 -> NONTERM_Stmt 
-    | 24 -> NONTERM_StmtM 
-    | 25 -> NONTERM_StmtM 
-    | 26 -> NONTERM_StmtM 
+    | 22 -> NONTERM_StmtOrDecSeq 
+    | 23 -> NONTERM_StmtOrDecSeq 
+    | 24 -> NONTERM_StmtOrDecSeq 
+    | 25 -> NONTERM_Stmt 
+    | 26 -> NONTERM_Stmt 
     | 27 -> NONTERM_StmtM 
     | 28 -> NONTERM_StmtM 
     | 29 -> NONTERM_StmtM 
-    | 30 -> NONTERM_StmtU 
-    | 31 -> NONTERM_StmtU 
-    | 32 -> NONTERM_StmtU 
-    | 33 -> NONTERM_Expr 
-    | 34 -> NONTERM_Expr 
-    | 35 -> NONTERM_ExprNotAccess 
-    | 36 -> NONTERM_ExprNotAccess 
-    | 37 -> NONTERM_ExprNotAccess 
-    | 38 -> NONTERM_ExprNotAccess 
-    | 39 -> NONTERM_ExprNotAccess 
-    | 40 -> NONTERM_ExprNotAccess 
-    | 41 -> NONTERM_ExprNotAccess 
-    | 42 -> NONTERM_ExprNotAccess 
+    | 30 -> NONTERM_StmtM 
+    | 31 -> NONTERM_StmtM 
+    | 32 -> NONTERM_StmtM 
+    | 33 -> NONTERM_StmtM 
+    | 34 -> NONTERM_StmtM 
+    | 35 -> NONTERM_StmtM 
+    | 36 -> NONTERM_StmtM 
+    | 37 -> NONTERM_StmtM 
+    | 38 -> NONTERM_StmtU 
+    | 39 -> NONTERM_StmtU 
+    | 40 -> NONTERM_StmtU 
+    | 41 -> NONTERM_Expr 
+    | 42 -> NONTERM_Expr 
     | 43 -> NONTERM_ExprNotAccess 
     | 44 -> NONTERM_ExprNotAccess 
     | 45 -> NONTERM_ExprNotAccess 
@@ -297,24 +359,51 @@ let prodIdxToNonTerminal (prodIdx:int) =
     | 51 -> NONTERM_ExprNotAccess 
     | 52 -> NONTERM_ExprNotAccess 
     | 53 -> NONTERM_ExprNotAccess 
-    | 54 -> NONTERM_AtExprNotAccess 
-    | 55 -> NONTERM_AtExprNotAccess 
-    | 56 -> NONTERM_AtExprNotAccess 
-    | 57 -> NONTERM_Access 
-    | 58 -> NONTERM_Access 
-    | 59 -> NONTERM_Access 
-    | 60 -> NONTERM_Access 
-    | 61 -> NONTERM_Access 
-    | 62 -> NONTERM_Exprs 
-    | 63 -> NONTERM_Exprs 
-    | 64 -> NONTERM_Exprs1 
-    | 65 -> NONTERM_Exprs1 
-    | 66 -> NONTERM_Const 
-    | 67 -> NONTERM_Const 
-    | 68 -> NONTERM_Const 
-    | 69 -> NONTERM_Const 
-    | 70 -> NONTERM_Type 
-    | 71 -> NONTERM_Type 
+    | 54 -> NONTERM_ExprNotAccess 
+    | 55 -> NONTERM_ExprNotAccess 
+    | 56 -> NONTERM_ExprNotAccess 
+    | 57 -> NONTERM_ExprNotAccess 
+    | 58 -> NONTERM_ExprNotAccess 
+    | 59 -> NONTERM_ExprNotAccess 
+    | 60 -> NONTERM_ExprNotAccess 
+    | 61 -> NONTERM_ExprNotAccess 
+    | 62 -> NONTERM_ExprNotAccess 
+    | 63 -> NONTERM_ExprNotAccess 
+    | 64 -> NONTERM_ExprNotAccess 
+    | 65 -> NONTERM_ExprNotAccess 
+    | 66 -> NONTERM_ExprNotAccess 
+    | 67 -> NONTERM_ExprNotAccess 
+    | 68 -> NONTERM_ExprNotAccess 
+    | 69 -> NONTERM_ExprNotAccess 
+    | 70 -> NONTERM_ExprNotAccess 
+    | 71 -> NONTERM_ExprNotAccess 
+    | 72 -> NONTERM_ExprNotAccess 
+    | 73 -> NONTERM_AtExprNotAccess 
+    | 74 -> NONTERM_AtExprNotAccess 
+    | 75 -> NONTERM_AtExprNotAccess 
+    | 76 -> NONTERM_AtExprNotAccess 
+    | 77 -> NONTERM_AtExprNotAccess 
+    | 78 -> NONTERM_Access 
+    | 79 -> NONTERM_Access 
+    | 80 -> NONTERM_Access 
+    | 81 -> NONTERM_Access 
+    | 82 -> NONTERM_Access 
+    | 83 -> NONTERM_Exprs 
+    | 84 -> NONTERM_Exprs 
+    | 85 -> NONTERM_StmtCase 
+    | 86 -> NONTERM_StmtCase 
+    | 87 -> NONTERM_StmtCase 
+    | 88 -> NONTERM_Exprs1 
+    | 89 -> NONTERM_Exprs1 
+    | 90 -> NONTERM_ConstString 
+    | 91 -> NONTERM_Const 
+    | 92 -> NONTERM_Const 
+    | 93 -> NONTERM_Const 
+    | 94 -> NONTERM_Const 
+    | 95 -> NONTERM_ConstChar 
+    | 96 -> NONTERM_Type 
+    | 97 -> NONTERM_Type 
+    | 98 -> NONTERM_Type 
     | _ -> failwith "prodIdxToNonTerminal: bad production index"
 
 let _fsyacc_endOfInputTag = 41 
