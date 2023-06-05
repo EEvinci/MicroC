@@ -437,6 +437,15 @@ let token_to_string (t:token) =
   | TIMES  -> "TIMES" 
   | DIV  -> "DIV" 
   | MOD  -> "MOD" 
+  | SELFPLUS  -> "SELFPLUS" 
+  | SELFMINUS  -> "SELFMINUS" 
+  | SELFTIMES  -> "SELFTIMES" 
+  | SELFDIV  -> "SELFDIV" 
+  | SELFMOD  -> "SELFMOD" 
+  | ADDONE  -> "ADDONE" 
+  | MINUSONE  -> "MINUSONE" 
+  | QUESTION  -> "QUESTION" 
+  | COLON  -> "COLON" 
   | CHAR  -> "CHAR" 
   | ELSE  -> "ELSE" 
   | IF  -> "IF" 
@@ -447,8 +456,18 @@ let token_to_string (t:token) =
   | RETURN  -> "RETURN" 
   | VOID  -> "VOID" 
   | WHILE  -> "WHILE" 
+  | FOR  -> "FOR" 
+  | STRING  -> "STRING" 
+  | BREAK  -> "BREAK" 
+  | CONTINUE  -> "CONTINUE" 
+  | DOWHILE  -> "DOWHILE" 
+  | DO  -> "DO" 
+  | CASE  -> "CASE" 
+  | SWITCH  -> "SWITCH" 
+  | DEFAULT  -> "DEFAULT" 
   | CSTSTRING _ -> "CSTSTRING" 
   | NAME _ -> "NAME" 
+  | CSTCHAR _ -> "CSTCHAR" 
   | CSTINT _ -> "CSTINT" 
   | CSTBOOL _ -> "CSTBOOL" 
 
@@ -480,6 +499,15 @@ let _fsyacc_dataOfToken (t:token) =
   | TIMES  -> (null : System.Object) 
   | DIV  -> (null : System.Object) 
   | MOD  -> (null : System.Object) 
+  | SELFPLUS  -> (null : System.Object) 
+  | SELFMINUS  -> (null : System.Object) 
+  | SELFTIMES  -> (null : System.Object) 
+  | SELFDIV  -> (null : System.Object) 
+  | SELFMOD  -> (null : System.Object) 
+  | ADDONE  -> (null : System.Object) 
+  | MINUSONE  -> (null : System.Object) 
+  | QUESTION  -> (null : System.Object) 
+  | COLON  -> (null : System.Object) 
   | CHAR  -> (null : System.Object) 
   | ELSE  -> (null : System.Object) 
   | IF  -> (null : System.Object) 
@@ -490,8 +518,18 @@ let _fsyacc_dataOfToken (t:token) =
   | RETURN  -> (null : System.Object) 
   | VOID  -> (null : System.Object) 
   | WHILE  -> (null : System.Object) 
+  | FOR  -> (null : System.Object) 
+  | STRING  -> (null : System.Object) 
+  | BREAK  -> (null : System.Object) 
+  | CONTINUE  -> (null : System.Object) 
+  | DOWHILE  -> (null : System.Object) 
+  | DO  -> (null : System.Object) 
+  | CASE  -> (null : System.Object) 
+  | SWITCH  -> (null : System.Object) 
+  | DEFAULT  -> (null : System.Object) 
   | CSTSTRING _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
   | NAME _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
+  | CSTCHAR _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
   | CSTINT _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
   | CSTBOOL _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
 let _fsyacc_gotos = [| 0us; 65535us; 1us; 65535us; 0us; 1us; 2us; 65535us; 0us; 2us; 4us; 5us; 2us; 65535us; 0us; 4us; 4us; 4us; 8us; 65535us; 0us; 6us; 4us; 6us; 25us; 34us; 29us; 34us; 35us; 34us; 37us; 42us; 40us; 42us; 43us; 42us; 4us; 65535us; 9us; 11us; 10us; 11us; 14us; 15us; 16us; 17us; 2us; 65535us; 0us; 8us; 4us; 8us; 2us; 65535us; 25us; 26us; 29us; 30us; 3us; 65535us; 25us; 33us; 29us; 33us; 35us; 36us; 8us; 65535us; 27us; 28us; 31us; 32us; 37us; 54us; 40us; 54us; 43us; 54us; 58us; 54us; 59us; 54us; 64us; 54us; 3us; 65535us; 37us; 38us; 40us; 41us; 43us; 44us; 4us; 65535us; 37us; 40us; 40us; 40us; 43us; 40us; 58us; 67us; 6us; 65535us; 37us; 45us; 40us; 45us; 43us; 45us; 58us; 46us; 59us; 60us; 64us; 65us; 6us; 65535us; 37us; 47us; 40us; 47us; 43us; 47us; 58us; 47us; 59us; 66us; 64us; 68us; 29us; 65535us; 37us; 48us; 40us; 48us; 43us; 48us; 50us; 52us; 56us; 57us; 58us; 48us; 59us; 48us; 62us; 63us; 64us; 48us; 74us; 75us; 77us; 100us; 80us; 81us; 82us; 83us; 101us; 85us; 102us; 86us; 103us; 87us; 104us; 88us; 105us; 89us; 106us; 90us; 107us; 91us; 108us; 92us; 109us; 93us; 110us; 94us; 111us; 95us; 112us; 96us; 113us; 98us; 115us; 97us; 126us; 99us; 129us; 100us; 29us; 65535us; 37us; 71us; 40us; 71us; 43us; 71us; 50us; 71us; 56us; 71us; 58us; 71us; 59us; 71us; 62us; 71us; 64us; 71us; 74us; 71us; 77us; 71us; 80us; 71us; 82us; 71us; 101us; 71us; 102us; 71us; 103us; 71us; 104us; 71us; 105us; 71us; 106us; 71us; 107us; 71us; 108us; 71us; 109us; 71us; 110us; 71us; 111us; 71us; 112us; 71us; 113us; 71us; 115us; 72us; 126us; 71us; 129us; 71us; 30us; 65535us; 37us; 73us; 40us; 73us; 43us; 73us; 50us; 73us; 56us; 73us; 58us; 73us; 59us; 73us; 62us; 73us; 64us; 73us; 74us; 73us; 77us; 73us; 80us; 73us; 82us; 73us; 101us; 73us; 102us; 73us; 103us; 73us; 104us; 73us; 105us; 73us; 106us; 73us; 107us; 73us; 108us; 73us; 109us; 73us; 110us; 73us; 111us; 73us; 112us; 73us; 113us; 73us; 115us; 73us; 123us; 125us; 126us; 73us; 129us; 73us; 32us; 65535us; 37us; 70us; 40us; 70us; 43us; 70us; 50us; 70us; 56us; 70us; 58us; 70us; 59us; 70us; 62us; 70us; 64us; 70us; 74us; 70us; 77us; 70us; 80us; 70us; 82us; 70us; 101us; 70us; 102us; 70us; 103us; 70us; 104us; 70us; 105us; 70us; 106us; 70us; 107us; 70us; 108us; 70us; 109us; 70us; 110us; 70us; 111us; 70us; 112us; 70us; 113us; 70us; 115us; 69us; 117us; 118us; 120us; 121us; 123us; 124us; 126us; 70us; 129us; 70us; 1us; 65535us; 77us; 78us; 2us; 65535us; 77us; 128us; 129us; 130us; 30us; 65535us; 37us; 114us; 40us; 114us; 43us; 114us; 50us; 114us; 56us; 114us; 58us; 114us; 59us; 114us; 62us; 114us; 64us; 114us; 74us; 114us; 77us; 114us; 80us; 114us; 82us; 114us; 101us; 114us; 102us; 114us; 103us; 114us; 104us; 114us; 105us; 114us; 106us; 114us; 107us; 114us; 108us; 114us; 109us; 114us; 110us; 114us; 111us; 114us; 112us; 114us; 113us; 114us; 115us; 114us; 123us; 114us; 126us; 114us; 129us; 114us; 8us; 65535us; 0us; 10us; 4us; 10us; 25us; 9us; 29us; 9us; 35us; 9us; 37us; 9us; 40us; 9us; 43us; 9us; |]

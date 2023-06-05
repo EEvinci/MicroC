@@ -17,31 +17,22 @@ using System.Collections.Generic;
 
 class Machine
 {
-    static void Usage()
-    {
-        System.Console.WriteLine("Usage: machine.exe [-t] <programfile> <arg1> ...\n");
-    }
     static void Main(string[] args)
     {
-        try
-        {
-            List<string> arglist = new List<string>(args);
+        // foreach (var arg in args) {
+        // Console.WriteLine(arg);
+        // }
+        List<string> arglist = new List<string>(args);
 
-            if (arglist.Contains("-t") || arglist.Contains("-trace"))
-            {
-                arglist.Remove("-t");
-                arglist.Remove("-trace");
-                execute(arglist.ToArray(), true);
-            }
-            else
-                execute(arglist.ToArray(), false);
-
-        }
-        catch (Exception e)
+        if (args.Length == 0)
+            System.Console.WriteLine("Usage: Machine.exe <programfile> <arg1> ...\n");
+        else if (arglist.Contains("-t"))
         {
-            System.Console.WriteLine(e.Message + "\n\n");
-            Usage();
+            arglist.Remove("-t");
+            execute(arglist.ToArray(), true);
         }
+        else
+            execute(arglist.ToArray(), false);
     }
 
     // These numeric instruction codes must agree with Machine.fs:
@@ -66,14 +57,12 @@ class Machine
         int[] p = readfile(arglist[0]);                // Read the program from file
         int[] s = new int[STACKSIZE];               // The evaluation stack
         int[] iargs = new int[arglist.Length - 1];
-
         for (int i = 1; i < arglist.Length; i++)           // Push commandline arguments
             iargs[i - 1] = Int32.Parse(arglist[i]);
 
         long starttime = DateTime.Now.Millisecond;
         execcode(p, s, iargs, trace);            // Execute program proper
         long runtime = DateTime.Now.Millisecond - starttime;
-
         Console.WriteLine("\nRan " + runtime / 1000.0 + " seconds");
     }
 

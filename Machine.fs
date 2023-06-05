@@ -265,3 +265,19 @@ let rec emitints getlab instr ints =
  *)
  
 //通过对 code 的两次遍历,完成汇编指令到机器指令的转换
+let code2ints (code : instr list) : int list =
+    
+    //从前往后遍历 `汇编指令序列 code: instr list`
+    //得到 标签对应的地址,记录到 labenv中
+    let (_, labenv) = List.fold makelabenv (0, []) code
+    
+    //getlab 是得到标签所在地址的函数
+    let getlab lab = lookup labenv lab
+    
+    //从后往前 遍历 `汇编指令序列 code: instr list`
+    List.foldBack (emitints getlab) code []
+                    
+
+
+let ntolabel (n:int) :label = 
+    string(n)
