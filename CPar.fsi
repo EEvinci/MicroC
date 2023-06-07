@@ -26,6 +26,15 @@ type token =
   | TIMES
   | DIV
   | MOD
+  | SELFPLUS
+  | SELFMINUS
+  | SELFTIMES
+  | SELFDIV
+  | SELFMOD
+  | ADDONE
+  | MINUSONE
+  | QUESTION
+  | COLON
   | CHAR
   | ELSE
   | IF
@@ -36,8 +45,13 @@ type token =
   | RETURN
   | VOID
   | WHILE
+  | FOR
+  | STRING
+  | BREAK
+  | CONTINUE
   | CSTSTRING of (string)
   | NAME of (string)
+  | CSTCHAR of (char)
   | CSTINT of (int)
   | CSTBOOL of (int)
 type tokenId = 
@@ -66,6 +80,15 @@ type tokenId =
     | TOKEN_TIMES
     | TOKEN_DIV
     | TOKEN_MOD
+    | TOKEN_SELFPLUS
+    | TOKEN_SELFMINUS
+    | TOKEN_SELFTIMES
+    | TOKEN_SELFDIV
+    | TOKEN_SELFMOD
+    | TOKEN_ADDONE
+    | TOKEN_MINUSONE
+    | TOKEN_QUESTION
+    | TOKEN_COLON
     | TOKEN_CHAR
     | TOKEN_ELSE
     | TOKEN_IF
@@ -76,8 +99,18 @@ type tokenId =
     | TOKEN_RETURN
     | TOKEN_VOID
     | TOKEN_WHILE
+    | TOKEN_FOR
+    | TOKEN_STRING
+    | TOKEN_BREAK
+    | TOKEN_CONTINUE
+    | TOKEN_DOWHILE
+    | TOKEN_DO
+    | TOKEN_CASE
+    | TOKEN_SWITCH
+    | TOKEN_DEFAULT
     | TOKEN_CSTSTRING
     | TOKEN_NAME
+    | TOKEN_CSTCHAR
     | TOKEN_CSTINT
     | TOKEN_CSTBOOL
     | TOKEN_end_of_input
@@ -88,6 +121,7 @@ type nonTerminalId =
     | NONTERM_Topdecs
     | NONTERM_Topdec
     | NONTERM_Vardec
+    | NONTERM_VardecAndAssignment
     | NONTERM_Vardesc
     | NONTERM_Fundec
     | NONTERM_Paramdecs
@@ -102,8 +136,11 @@ type nonTerminalId =
     | NONTERM_AtExprNotAccess
     | NONTERM_Access
     | NONTERM_Exprs
+    | NONTERM_StmtCase
     | NONTERM_Exprs1
+    | NONTERM_ConstString
     | NONTERM_Const
+    | NONTERM_ConstChar
     | NONTERM_Type
 /// This function maps tokens to integer indexes
 val tagOfToken: token -> int
