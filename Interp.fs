@@ -372,6 +372,8 @@ and eval e locEnv gloEnv store : int * store =
         let (res, store2) = eval e locEnv gloEnv store1
         (res, setSto store2 loc res)
     | CstI i -> (i, store)
+    | ConstChar c    -> ((int c), store)
+    | ConstString s  -> (s.Length,store)
     | Addr acc -> access acc locEnv gloEnv store
     // Print函数
     | Print (op , e1) ->    let (i1,store1) = 

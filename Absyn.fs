@@ -46,6 +46,11 @@ and stmt =
   | Block of stmtordec list          (* Block: grouping and scope   *)
   // 语句块内部，可以是变量声明 或语句的列表                                                             
 
+and control =
+  | Return of expr option
+  | Break
+  | Continue   
+  
 and stmtordec =                                                    
   | Dec of typ * string              (* Local variable declaration  *)
   | Stmt of stmt                     (* A statement                 *)
