@@ -37,6 +37,7 @@ let nl = CstI 10 //  \n 的 ASCII 码
 %nonassoc GT LT GE LE
 %left PLUS MINUS
 %left TIMES DIV MOD 
+%left QUESTION COLON
 %nonassoc NOT AMP 
 %nonassoc LBRACK          /* highest precedence  */
 
