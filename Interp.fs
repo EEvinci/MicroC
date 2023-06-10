@@ -104,6 +104,9 @@ type address = int
 
 type store = Map<address, int>
 
+//环境变量存储对应contorl类别的 -- break return continue***
+type controlStat = control option
+
 //空存储
 let emptyStore = Map.empty<address, int>
 
@@ -138,19 +141,10 @@ store结构是Map<string,int>
 // 返回新环境 locEnv,更新store,
 // nextloc是store上下一个空闲位置
 (*
-
-// variable.c
-int g ;
-int h[3];
-void main (int n){
-n = 8;
-}
-上面c程序的解释环境如下：
-
- 环境：locEnv:
+    locEnv:
     ([(n, 5); (n, 4); (g, 0)], 6)
 
-存储：store:
+   store:
     (0, 0)  (1, 0)(2, 0)(3, 0)(4, 1)  (5, 8)
      ^^^^    ^^^^^^^^^^^^^^^^^^^^^^    ^^^^
        g               h                n
@@ -163,15 +157,17 @@ n = 8;
    下一个待分配位置是 6
 *)
 
-//将多个值 xs vs绑定到环境
-//遍历 xs vs 列表,然后调用 bindVar实现单个值的绑定
-let store2str store =
-    String.concat "" (List.map string (Map.toList store))
-
 let bindVar x v (env, nextloc) store : locEnv * store =
     let env1 = (x, nextloc) :: env
     msg $"bindVar:\n%A{env1}\n"
 
+    //返回新环境，新的待分配位置+1，设置当前存储位置为值 v
+    ((env1, nextloc + 1), setSto store nextloc v)
+
+//将多个值 xs vs绑定到环境
+//遍历 xs vs 列表,然后调用 bindVar实现单个值的绑定
+let store2str store =
+    String.concat "" (List.map string (Map.toList store))
 
 let rec bindVars xs vs locEnv store : locEnv * store =
     let res =
@@ -183,7 +179,7 @@ let rec bindVars xs vs locEnv store : locEnv * store =
         | _ -> failwith "parameter/argument mismatch"
 
     msg "\nbindVars:\n"
-    msg $"\nlocEnv:\n{locEnv}\n"
+    msg $"\nlocEnv:\n{locEnv}"
     msg $"\nStore:\n"
     store2str store |> msg
     res
@@ -199,10 +195,11 @@ let rec allocate (typ, x) (env0, nextloc) sto0 : locEnv * store =
         match typ with
         //数组 调用 initSto 分配 i 个空间
         | TypA (t, Some i) -> (nextloc + i, nextloc, initSto nextloc i sto0)
+        | TypS  -> (nextloc+128, nextloc, initSto nextloc 128 sto0)
         // 常规变量默认值是 0
         | _ -> (nextloc, 0, sto0)
 
-    msg $"\nalloc:\n {((typ, x), (env0, nextloc), sto0)}\n"
+    msg $"\nalloc:\n {((typ, x), (env0, nextloc), sto0)}"
     bindVar x v (env0, nextloc1) sto1
 
 (* Build global environment of variables and functions.  For global
@@ -211,57 +208,64 @@ let rec allocate (typ, x) (env0, nextloc) sto0 : locEnv * store =
 *)
 
 //初始化 解释器环境和store
-let initEnvAndStore (topdecs: topdec list) : locEnv * funEnv * store =
+let initEnvAndStore (topdecs: topdec list) : locEnv * funEnv * store * controlStat=
 
     //包括全局函数和全局变量
     msg $"\ntopdecs:\n{topdecs}\n"
 
-    let rec addv decs locEnv funEnv store =
+    let rec addv decs locEnv funEnv store controlStat=
         match decs with
-        | [] -> (locEnv, funEnv, store)
+        | [] -> (locEnv, funEnv, store, controlStat)
 
         // 全局变量声明  调用allocate 在store上给变量分配空间
         | Vardec (typ, x) :: decr ->
             let (locEnv1, sto1) = allocate (typ, x) locEnv store
-            addv decr locEnv1 funEnv sto1
+            addv decr locEnv1 funEnv sto1 controlStat
 
         //全局函数 将声明(f,(xs,body))添加到全局函数环境 funEnv
-        | Fundec (_, f, xs, body) :: decr -> addv decr locEnv ((f, (xs, body)) :: funEnv) store
-
+        | Fundec (_, f, xs, body) :: decr -> addv decr locEnv ((f, (xs, body)) :: funEnv) store controlStat
+        | VardecAndAssignment (typ,x,e) :: decr ->
+            let (loc, store1) = allocate (typ, x) locEnv store  // 分配空间
+            addv decr loc funEnv store1 controlStat
     // ([], 0) []  默认全局环境
     // locEnv ([],0) 变量环境 ，变量定义为空列表[],下一个空闲地址为0
     // ([("n", 1); ("r", 0)], 2)  表示定义了 变量 n , r 下一个可以用的变量索引是 2
     // funEnv []   函数环境，函数定义为空列表[]
-    addv topdecs ([], 0) [] emptyStore
+    addv topdecs ([], 0) [] emptyStore None
 
 (* ------------------------------------------------------------------- *)
 
 (* Interpreting micro-C statements *)
 
-let rec exec stmt (locEnv: locEnv) (gloEnv: gloEnv) (store: store) : store =
+let rec exec stmt (locEnv: locEnv) (gloEnv: gloEnv) (store: store) (controlStat:controlStat) : store * controlStat=
     match stmt with
     | If (e, stmt1, stmt2) ->
         let (v, store1) = eval e locEnv gloEnv store
 
         if v <> 0 then
-            exec stmt1 locEnv gloEnv store1 //True分支
+            exec stmt1 locEnv gloEnv store1 controlStat //True分支
         else
-            exec stmt2 locEnv gloEnv store1 //False分支
+            exec stmt2 locEnv gloEnv store1 controlStat //False分支
 
     | While (e, body) ->
 
         //定义 While循环辅助函数 loop
-        let rec loop store1 =
-            //求值 循环条件,注意变更环境 store
-            let (v, store2) = eval e locEnv gloEnv store1
-            // 继续循环
-            if v <> 0 then
-                loop (exec body locEnv gloEnv store2)
-            else
-                store2 //退出循环返回 环境store2
+        let rec loop store1 controlStat=
+            match controlStat with
+            | Some(Break)           -> (store1, None)          // 如果有遇到的break，结束该次循环并清除break标记
+            | Some(Return _)        -> (store1, controlStat)   // 如果有未跳出的函数，
+            | _                     ->                         // continue或者没有设置控制状态时，先检查条件然后继续运行
+                //求值 循环条件,注意变更环境 store
+                let (v, store2) = eval e locEnv gloEnv store1
+                // 继续循环
+                if v <> 0 then
+                    let (store1,c) = (exec body locEnv gloEnv store2 None) in
+                        loop store1 c
+                else
+                    (store2,None) //退出循环返回 环境store2
 
-        loop store
-      // dowhile循环函数部分
+        loop store controlStat
+     // dowhile循环函数部分
     | DoWhile (body,e) -> 
         let rec loop store1 controlStat=
                 match controlStat with
@@ -279,13 +283,22 @@ let rec exec stmt (locEnv: locEnv) (gloEnv: gloEnv) (store: store) : store =
         // _ 表示丢弃e的值,返回 变更后的环境store1
         let (_, store1) = eval e locEnv gloEnv store
         (store1 ,controlStat)
-    
-
-    | Expr e ->
-        // _ 表示丢弃e的值,返回 变更后的环境store1
-        let (_, store1) = eval e locEnv gloEnv store
-        store1
-        
+     // for循环函数部分
+    | For ( dec,e1,opera,body ) ->
+        let (res , store0) = eval dec locEnv gloEnv store
+        let rec loop store1 controlStat = 
+             match controlStat with
+             | Some(Break)           -> (store1, None)          // 如果有遇到的break，结束该次循环并清除break标记
+             | Some(Return _)        -> (store1, controlStat)   // 如果有未跳出的函数，
+             | _                     ->                         // continue或者没有设置控制状态时，先检查条件然后继续运行
+                let (ifValue, store2) = eval e1 locEnv gloEnv store1
+                if ifValue<>0 then 
+                    let (store3,c) = exec body locEnv gloEnv store2 None
+                    let (oneend ,store4) = eval opera locEnv gloEnv store3
+                    loop store4 c
+                        else (store2,None)
+        loop store0 controlStat
+     
     | Switch (e,body) ->  
                 let (res, store0) = eval e locEnv gloEnv store
                 let rec loop store1 controlStat = 
@@ -306,7 +319,20 @@ let rec exec stmt (locEnv: locEnv) (gloEnv: gloEnv) (store: store) : store =
                         (pick body)
                 loop store0 controlStat
     | Case (e,body) -> exec body locEnv gloEnv store controlStat
-
+    // | Switch(e,body) ->  
+    //           let (res, store1) = eval e locEnv gloEnv store
+    //           let rec choose list =
+    //             match list with
+    //             | Case(e1,body1) :: tail -> 
+    //                 let (res2, store2) = eval e1 locEnv gloEnv store1
+    //                 if res2=res then eval e1 locEnv gloEnv store1
+    //                 else choose tail
+    //             | [] -> (res,store1)
+    //             | Default( body1 ) :: tail -> 
+    //                 let(res3,store3) = exec body1 locEnv gloEnv store1 None
+    //                 choose tail
+    //           (choose body)
+    // | Case(e,body) -> exec body locEnv gloEnv store controlStat
     | Block stmts ->
 
         // 语句块 解释辅助函数 loop
@@ -325,7 +351,7 @@ let rec exec stmt (locEnv: locEnv) (gloEnv: gloEnv) (store: store) : store =
                         | s1 :: sr -> loop sr (stmtordec s1 locEnv gloEnv store controlStat)
                    
         loop stmts (locEnv, store, controlStat)
-
+      // Myctrl函数部分
     | Myctrl ctrl -> 
         match ctrl with
             | Return x  -> 
@@ -335,6 +361,7 @@ let rec exec stmt (locEnv: locEnv) (gloEnv: gloEnv) (store: store) : store =
                 else (store, Some(ctrl))
             | _         -> (store, Some(ctrl))    
     // | Return _ -> failwith "return not implemented" // 解释器没有实现 return
+
 and stmtordec stmtordec locEnv gloEnv store (controlStat:controlStat)=
     match stmtordec with
     | Stmt stmt -> let (e, (s, c)) = (locEnv, exec stmt locEnv gloEnv store controlStat) in (e, s, c)
@@ -390,10 +417,8 @@ and eval e locEnv gloEnv store : int * store =
                 (printf "%c" (char i1)
                  i1)
             | _ -> failwith ("unknown primitive " + ope)
-
         (res, store1)
-        
-        // SimpleOpt运算符函数
+    // SimpleOpt运算符函数
     | SimpleOpt (ope,acc,e) ->
         let  (loc, store1) = access acc locEnv gloEnv store // 取acc地址
         let  (i1)  = getSto store1 loc
@@ -431,6 +456,12 @@ and eval e locEnv gloEnv store : int * store =
             | _ -> failwith ("unknown primitive " + ope)
 
         (res, store2)
+    | Prim3 (e1, e2, e3) ->
+        let (i1, store1) = eval e1 locEnv gloEnv store
+        if i1 <> 0 then
+            eval e2 locEnv gloEnv store1
+        else
+            eval e3 locEnv gloEnv store1
     | Andalso (e1, e2) ->
         let (i1, store1) as res = eval e1 locEnv gloEnv store
 
@@ -478,8 +509,14 @@ and callfun f es locEnv gloEnv store : int * store =
     let (fBodyEnv, store2) =
         bindVars (List.map snd paramdecs) vs (varEnv, nextloc) store1
 
-    let store3 = exec fBody fBodyEnv gloEnv store2
-    (-111, store3)
+    let (store3,c) = exec fBody fBodyEnv gloEnv store2 None // Break 和 Continue
+    match c with
+        | Some(Return res)  -> 
+            if res.IsSome then 
+                let retVal = fst (eval res.Value locEnv gloEnv store3) in
+                    (retVal, store3) 
+            else (-111, store3) // interupt by return
+        | _                 -> (-112, store3)  // end with normal stmt
 
 (* Interpret a complete micro-C program by initializing the store
    and global environments, then invoking its `main' function.
@@ -490,7 +527,7 @@ and callfun f es locEnv gloEnv store : int * store =
 // 可以为空 []
 let run (Prog topdecs) vs =
     //
-    let ((varEnv, nextloc), funEnv, store0) = initEnvAndStore topdecs
+    let ((varEnv, nextloc), funEnv, store0 , controlStat) = initEnvAndStore topdecs
 
     // mainParams 是 main 的参数列表
     //
@@ -527,10 +564,10 @@ let run (Prog topdecs) vs =
     // map [(0, 8)]
     sprintf "\nstore1:\n %A\n" store1
 
-    let endstore =
-        exec mainBody mainBodyEnv (varEnv, funEnv) store1
+    let (endstore,c) =
+        exec mainBody mainBodyEnv (varEnv, funEnv) store1 controlStat
 
-    msg $"\nvarEnv:\n{varEnv}\n"
+    msg $"\nvarEnv:\n{varEnv}"
     msg $"\nStore:\n"
     msg <| store2str endstore
 

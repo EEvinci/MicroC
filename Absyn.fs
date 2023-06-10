@@ -18,7 +18,7 @@ and expr =                           // 表达式，右值
   | CstI of int                      (* Constant                    *)
   | ConstChar of char                (*constant char*) 
   | ConstString of string            (*constant string*)
-  | ConstFloat of float32            (*constant float*) // Zhangjz
+  | ConstFloat of float32            (*constant float*) // 
   | SimpleOpt of  string * access * expr
   | Print of string * expr           (* 输出****)
   | Prim1 of string * expr           (* Unary primitive operator    *)
@@ -27,7 +27,7 @@ and expr =                           // 表达式，右值
   | Andalso of expr * expr           (* Sequential and              *)
   | Orelse of expr * expr            (* Sequential or               *)
   | Call of string * expr list       (* Function call f(...)        *)
-                                                                   
+                                                            
 and access =                         //左值，存储的位置                                            
   | AccVar of string                 (* Variable access        x    *) 
   | AccDeref of expr                 (* Pointer dereferencing  *p   *)
@@ -44,13 +44,13 @@ and stmt =
   | Expr of expr                     (* Expression statement   e;   *)
   | Myctrl of control                (* 填加control模块，添加break、continue部分****)
   | Block of stmtordec list          (* Block: grouping and scope   *)
-  // 语句块内部，可以是变量声明 或语句的列表                                                             
+  // 语句块内部，可以是变量声明 或语句的列表                                                              
 
 and control =
   | Return of expr option
   | Break
   | Continue   
-  
+
 and stmtordec =                                                    
   | Dec of typ * string              (* Local variable declaration  *)
   | Stmt of stmt                     (* A statement                 *)
@@ -61,6 +61,7 @@ and topdec =
   | Fundec of typ option * string * (typ * string) list * stmt
   | Vardec of typ * string
   | VardecAndAssignment of typ * string * expr
+
 // 程序是顶级声明的列表
 and program = 
   | Prog of topdec list

@@ -2,13 +2,16 @@ module Backend
 
 open System.Runtime.InteropServices
 
-open StackMachine
+open Machine
 
-let isLinux = RuntimeInformation.IsOSPlatform(OSPlatform.Linux)
+let isLinux =
+    RuntimeInformation.IsOSPlatform(OSPlatform.Linux)
 
-let isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+let isWindows =
+    RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
 
-let isOSX = RuntimeInformation.IsOSPlatform(OSPlatform.OSX)
+let isOSX =
+    RuntimeInformation.IsOSPlatform(OSPlatform.OSX)
 
 type operand = string
 
@@ -35,10 +38,10 @@ let new_label =
     let i = ref 0 in
 
     let get () =
-        let v = i.Value in
+        let v = !i in
 
-        i.Value <- i.Value + 1
-        ".Lasm" + (string v)
+        (i := (!i) + 1
+         ".Lasm" + (string v))
 
     get
 
@@ -47,7 +50,6 @@ let x86header =
     + "extern printc\n"
     + "extern checkargc\n"
     + "global asm_main\n"
-    + "default rel\n"
     + "section .data\n"
     + "glovars: dq 0\n"
     + "section .text\n"

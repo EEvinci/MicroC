@@ -23,12 +23,12 @@ module Contcomp
 
 open System.IO
 open Absyn
-open StackMachine
+open Machine
 
 (* The intermediate representation between passes 1 and 2 above:  *)
 
-type bstmtordec =
-     | BDec of instr list                  (* Declaration of local variable  *)
+type bstmtordec = // 变量声明 
+     | BDec of instr list                  (* 局部变量声明 Declaration of local variable  *)
      | BStmt of stmt                       (* A statement                    *)
 
 (* ------------------------------------------------------------------- *)
@@ -114,7 +114,6 @@ let rec addCSTS (s:string) C =
                                for i = 0 to s.Length do
                                    list <- (int (s.Chars(i)))::list
                                (CSTS list) :: C
-            
 (* ------------------------------------------------------------------- *)
 
 (* Simple environment operations *)
@@ -129,8 +128,8 @@ let rec lookup env x =
 (* A global variable has an absolute address, a local one has an offset: *)
 
 type Var = 
-    | Glovar of int                   (* absolute address in stack           *)
-    | Locvar of int                   (* address relative to bottom of frame *)
+    | Glovar of int                   (* absolute address in stack           *) // 绝对地址
+    | Locvar of int                   (* address relative to bottom of frame *) // 相对地址
 
 (* The variable environment keeps track of global and local variables, and 
    keeps track of next available offset for local variables *)
@@ -140,8 +139,8 @@ type VarEnv = (Var * typ) Env * int
 (* The function environment maps a function name to the function's label, 
    its return type, and its parameter declarations *)
 
-type Paramdecs = (typ * string) list
-type FunEnv = (label * typ option * Paramdecs) Env
+type Paramdecs = (typ * string) list // 函数参数
+type FunEnv = (label * typ option * Paramdecs) Env // 函数定义 名字 + 返回类型 + 函数参数
 
 (* Bind declared variable in varEnv and generate code to allocate it: *)
 
@@ -153,6 +152,10 @@ let allocate (kind : int -> Var) (typ, x) (varEnv : VarEnv) : VarEnv * instr lis
       let newEnv = ((x, (kind (fdepth+i), typ)) :: env, fdepth+i+1)
       let code = [INCSP i; GETSP; CSTI (i-1); SUB]
       (newEnv, code)
+    | TypS         ->
+        let newEnv = ((x, (kind (fdepth+128), typ)) :: env, fdepth+128+1)
+        let code = [INCSP 128; GETSP; CSTI (128-1); SUB]
+        (newEnv, code)
     | _ -> 
       let newEnv = ((x, (kind (fdepth), typ)) :: env, fdepth+1)
       let code = [INCSP 1]
@@ -206,6 +209,21 @@ let rec cStmt stmt (varEnv : VarEnv) (funEnv : FunEnv) (C : instr list) : instr 
       let (jumptest, C1) = 
            makeJump (cExpr e varEnv funEnv (IFNZRO labbegin :: C))
       addJump jumptest (Label labbegin :: cStmt body varEnv funEnv C1)
+    | DoWhile(body, e) ->
+        let labbegin = newLabel()
+        let C1 = 
+            cExpr e varEnv funEnv (IFNZRO labbegin :: C)
+        Label labbegin :: cStmt body varEnv funEnv C1 //先执行body
+    | For (e1, e2, e3, body) ->
+      let labend   = newLabel()                       //结束label
+      let labbegin = newLabel()                       //设置label 
+      let labope   = newLabel()                       //设置 for(,,opera) 的label
+      let Cend = Label labend :: C
+      let (jumptest, C1) =
+        makeJump (cExpr e2 varEnv funEnv (IFNZRO labbegin :: Cend))
+      let C2 = Label labope :: cExpr e3 varEnv funEnv (addINCSP -1 C1)
+      let C3 = cStmt body varEnv funEnv C2    
+      cExpr e1 varEnv funEnv (addINCSP -1 (addJump jumptest  (Label labbegin :: C3) ) )
     | Expr e -> 
       cExpr e varEnv funEnv (addINCSP -1 C) 
     | Block stmts -> 
@@ -223,10 +241,18 @@ let rec cStmt stmt (varEnv : VarEnv) (funEnv : FunEnv) (C : instr list) : instr 
           | (BDec code,  varEnv) :: sr -> code @ pass2 sr C
           | (BStmt stmt, varEnv) :: sr -> cStmt stmt varEnv funEnv (pass2 sr C)
       pass2 stmtsback (addINCSP(snd varEnv - fdepthend) C)
-    | Return None -> 
-      RET (snd varEnv - 1) :: deadcode C
-    | Return (Some e) -> 
-      cExpr e varEnv funEnv (RET (snd varEnv) :: deadcode C)
+    | Myctrl ctrl ->
+            match ctrl with
+            | Return x  -> 
+                if x.IsSome then 
+                  cExpr x.Value varEnv funEnv (RET (snd varEnv) :: deadcode C)
+                else 
+                  RET (snd varEnv - 1) :: deadcode C
+            | _         -> RET (snd varEnv - 1) :: deadcode C
+    // | Return None -> 
+    //   RET (snd varEnv - 1) :: deadcode C
+    // | Return (Some e) -> 
+    //   cExpr e varEnv funEnv (RET (snd varEnv) :: deadcode C)
 
 and bStmtordec stmtOrDec varEnv : bstmtordec * VarEnv =
     match stmtOrDec with 
@@ -235,13 +261,17 @@ and bStmtordec stmtOrDec varEnv : bstmtordec * VarEnv =
     | Dec (typ, x) ->
       let (varEnv1, code) = allocate Locvar (typ, x) varEnv 
       (BDec code, varEnv1)
-
+    | DecAndAssign (typ,x,e) -> 
+      let (varEnv1, code) = allocate Locvar (typ,x) varEnv
+      (BDec (cAccess (AccVar(x)) varEnv1 []  // cAccess 增加 x变量 对应的 的指令
+                (cExpr e varEnv1 [] (STI :: (addINCSP -1 code))) // 取出这个变量 给他赋值 
+            ), varEnv1)
 (* Compiling micro-C expressions: 
 
-   * e       is the expression to compile
-   * varEnv  is the compile-time variable environment 
-   * funEnv  is the compile-time environment 
-   * C       is the code following the code for this expression
+   * e       is the expression to compile 编译的表达式
+   * varEnv  is the compile-time variable environment 编译时变量环境
+   * funEnv  is the compile-time environment 编译时环境
+   * C       is the code following the code for this expression 表达式代码后面的代码
 
    Net effect principle: if the compilation (cExpr e varEnv funEnv C) of
    expression e returns the instruction sequence instrs, then the
@@ -256,7 +286,16 @@ and cExpr (e : expr) (varEnv : VarEnv) (funEnv : FunEnv) (C : instr list) : inst
     | Access acc     -> cAccess acc varEnv funEnv (LDI :: C)
     | Assign(acc, e) -> cAccess acc varEnv funEnv (cExpr e varEnv funEnv (STI :: C))
     | CstI i         -> addCST i C
+    | ConstChar i    -> addCST (int i) C   //字符
+    | ConstString s     -> addCST (int s) C     //字符串
     | Addr acc       -> cAccess acc varEnv funEnv C
+    | Print(ope,e1)  -> // print("%d",i)
+      cExpr e1 varEnv funEnv
+           (match ope with
+            | "%d"  -> PRINTI :: C
+            | "%c"  -> PRINTC :: C
+            | "%s"  -> PRINTC :: C
+            | _        -> failwith "unknown primitive 1")
     | Prim1(ope, e1) ->
       cExpr e1 varEnv funEnv
           (match ope with
@@ -280,6 +319,11 @@ and cExpr (e : expr) (varEnv : VarEnv) (funEnv : FunEnv) (C : instr list) : inst
             | ">"   -> SWAP :: LT :: C
             | "<="  -> SWAP :: LT :: addNOT C
             | _     -> failwith "unknown primitive 2"))
+    | Prim3 (e1, e2, e3) ->
+      let (jumpend, C1) = makeJump C
+      let (labelse, C2) = addLabel (cExpr e3 varEnv funEnv C1)
+      cExpr e1 varEnv funEnv (IFZERO labelse 
+      :: cExpr e2 varEnv funEnv (addJump jumpend C2))
     | SimpleOpt(ope,acc,e)->             
         cExpr e varEnv funEnv  
             (match ope with
@@ -314,7 +358,7 @@ and cExpr (e : expr) (varEnv : VarEnv) (funEnv : FunEnv) (C : instr list) : inst
             | "%=" ->
                 let ass = Assign (acc,Prim2("%",Access acc, e))
                 cExpr ass varEnv funEnv (addINCSP -1 C)
-            | _         -> failwith "Error: unknown unary operator")        
+            | _         -> failwith "Error: unknown unary operator")
     | Andalso(e1, e2) ->
       match C with
       | IFZERO lab :: _ ->
