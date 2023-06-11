@@ -1,43 +1,41 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Last\\Desktop\\plzoofs-master\\microc\\microc.fsproj": {}
+    "D:\\桌面\\学科\\2021-1\\编程语言原理与编译\\大作业\\gitee版本\\microc\\microc.fsproj": {}
   },
   "projects": {
-    "C:\\Users\\Last\\Desktop\\plzoofs-master\\microc\\microc.fsproj": {
+    "D:\\桌面\\学科\\2021-1\\编程语言原理与编译\\大作业\\gitee版本\\microc\\microc.fsproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Last\\Desktop\\plzoofs-master\\microc\\microc.fsproj",
+        "projectUniqueName": "D:\\桌面\\学科\\2021-1\\编程语言原理与编译\\大作业\\gitee版本\\microc\\microc.fsproj",
         "projectName": "microc",
-        "projectPath": "C:\\Users\\Last\\Desktop\\plzoofs-master\\microc\\microc.fsproj",
-        "packagesPath": "C:\\Users\\Last\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Last\\Desktop\\plzoofs-master\\microc\\obj\\",
+        "projectPath": "D:\\桌面\\学科\\2021-1\\编程语言原理与编译\\大作业\\gitee版本\\microc\\microc.fsproj",
+        "packagesPath": "C:\\Users\\41205\\.nuget\\packages\\",
+        "outputPath": "D:\\桌面\\学科\\2021-1\\编程语言原理与编译\\大作业\\gitee版本\\microc\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Last\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\41205\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
-          "net6.0"
+          "net5.0"
         ],
         "sources": {
-          "C:\\Program Files\\dotnet\\sdk\\6.0.406\\FSharp\\library-packs": {},
-          "https://nuget.cdn.azure.cn/v3/index.json": {}
+          "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
-          "net6.0": {
-            "targetAlias": "net6.0",
+          "net5.0": {
+            "targetAlias": "net5.0",
             "projectReferences": {}
           }
         }
       },
       "frameworks": {
-        "net6.0": {
-          "targetAlias": "net6.0",
+        "net5.0": {
+          "targetAlias": "net5.0",
           "dependencies": {
             "FSharp.Core": {
-              "include": "Runtime, Compile, Build, Native, Analyzers, BuildTransitive",
               "target": "Package",
-              "version": "[6.0.7, )",
+              "version": "[5.0.0, )",
               "generatePathProperty": true
             },
             "FsLexYacc": {
@@ -52,8 +50,7 @@
             "net47",
             "net471",
             "net472",
-            "net48",
-            "net481"
+            "net48"
           ],
           "assetTargetFallback": true,
           "warn": true,
@@ -62,7 +59,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.406\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.201\\RuntimeIdentifierGraph.json"
         }
       }
     }

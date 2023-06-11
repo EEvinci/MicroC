@@ -1,38 +1,38 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Last\\Desktop\\plzoofs-master\\microc\\interpc.fsproj": {}
+    "C:\\Users\\Last\\Desktop\\Microc_optimize-master\\Microc_optimize-master\\interpc.fsproj": {}
   },
   "projects": {
-    "C:\\Users\\Last\\Desktop\\plzoofs-master\\microc\\interpc.fsproj": {
+    "C:\\Users\\Last\\Desktop\\Microc_optimize-master\\Microc_optimize-master\\interpc.fsproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Last\\Desktop\\plzoofs-master\\microc\\interpc.fsproj",
+        "projectUniqueName": "C:\\Users\\Last\\Desktop\\Microc_optimize-master\\Microc_optimize-master\\interpc.fsproj",
         "projectName": "interpc",
-        "projectPath": "C:\\Users\\Last\\Desktop\\plzoofs-master\\microc\\interpc.fsproj",
+        "projectPath": "C:\\Users\\Last\\Desktop\\Microc_optimize-master\\Microc_optimize-master\\interpc.fsproj",
         "packagesPath": "C:\\Users\\Last\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Last\\Desktop\\plzoofs-master\\microc\\obj\\",
+        "outputPath": "C:\\Users\\Last\\Desktop\\Microc_optimize-master\\Microc_optimize-master\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Last\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
-          "net6.0"
+          "net5.0"
         ],
         "sources": {
           "C:\\Program Files\\dotnet\\sdk\\6.0.406\\FSharp\\library-packs": {},
           "https://nuget.cdn.azure.cn/v3/index.json": {}
         },
         "frameworks": {
-          "net6.0": {
-            "targetAlias": "net6.0",
+          "net5.0": {
+            "targetAlias": "net5.0",
             "projectReferences": {}
           }
         }
       },
       "frameworks": {
-        "net6.0": {
-          "targetAlias": "net6.0",
+        "net5.0": {
+          "targetAlias": "net5.0",
           "dependencies": {
             "FSharp.Core": {
               "include": "Runtime, Compile, Build, Native, Analyzers, BuildTransitive",
@@ -57,6 +57,24 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[5.0.0, 5.0.0]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Host.win-x64",
+              "version": "[5.0.17, 5.0.17]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[5.0.0, 5.0.0]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[5.0.0, 5.0.0]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"

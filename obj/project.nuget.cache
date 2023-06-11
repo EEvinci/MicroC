@@ -1,12 +1,16 @@
 {
   "version": 2,
-  "dgSpecHash": "8zbvnkk/hL5g3ANnAqqXqKEdk9p860aMWZlkCA2VuecQ97+4HCT0RcR8L8VfNFkUxrwaB6k7nuLx2ZR0FHl/Uw==",
+  "dgSpecHash": "dEcypVM7+cy7RnXK44C15wMjxrT4WF4/S4Ercx2xwdcz/Ye82mH4HIwdSv0JdjSJm322al5UXQC2ov23AR56/w==",
   "success": true,
-  "projectFilePath": "C:\\Users\\Last\\Desktop\\plzoofs-master\\microc\\microc.fsproj",
+  "projectFilePath": "C:\\Users\\Last\\Desktop\\Microc_optimize-master\\Microc_optimize-master\\interpc.fsproj",
   "expectedPackageFiles": [
     "C:\\Users\\Last\\.nuget\\packages\\fsharp.core\\6.0.7\\fsharp.core.6.0.7.nupkg.sha512",
     "C:\\Users\\Last\\.nuget\\packages\\fslexyacc\\10.2.0\\fslexyacc.10.2.0.nupkg.sha512",
-    "C:\\Users\\Last\\.nuget\\packages\\fslexyacc.runtime\\10.2.0\\fslexyacc.runtime.10.2.0.nupkg.sha512"
+    "C:\\Users\\Last\\.nuget\\packages\\fslexyacc.runtime\\10.2.0\\fslexyacc.runtime.10.2.0.nupkg.sha512",
+    "C:\\Users\\Last\\.nuget\\packages\\microsoft.netcore.app.ref\\5.0.0\\microsoft.netcore.app.ref.5.0.0.nupkg.sha512",
+    "C:\\Users\\Last\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\5.0.0\\microsoft.windowsdesktop.app.ref.5.0.0.nupkg.sha512",
+    "C:\\Users\\Last\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\5.0.0\\microsoft.aspnetcore.app.ref.5.0.0.nupkg.sha512",
+    "C:\\Users\\Last\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\5.0.17\\microsoft.netcore.app.host.win-x64.5.0.17.nupkg.sha512"
   ],
   "logs": []
 }
