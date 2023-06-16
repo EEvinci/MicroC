@@ -1,7 +1,7 @@
 void main(int n) {
   int q;
   q = fun(n);
-  print("%d",q);
+  print q;
 
 }
 

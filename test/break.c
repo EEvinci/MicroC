@@ -3,9 +3,9 @@ void main() {
   int i;
   for (i = 0; i < n; i++)
   {
-    print("%d",i);
+    print i;
     if (i==3){break;}
-    print("%d",i);
+    print i;
   }
 
 }

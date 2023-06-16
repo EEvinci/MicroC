@@ -221,7 +221,7 @@ let makelabenv (addr, labenv) instr =
 (* Bytecode emission, second pass: output bytecode as integers *)
 
 //getlab 是得到标签所在地址的函数
-//let getlab lab = lookup labenv lab  
+//let getlab lab = lookup labenv lab
 
 let rec emitints getlab instr ints = 
     match instr with
@@ -281,3 +281,40 @@ let code2ints (code : instr list) : int list =
 
 let ntolabel (n:int) :label = 
     string(n)
+
+//反编译
+let rec decomp ints : instr list = 
+
+    // printf "%A" ints
+
+    match ints with
+    | []                                              ->  []
+    | CODEADD :: ints_rest                         ->   ADD           :: decomp ints_rest
+    | CODESUB    :: ints_rest                         ->   SUB           :: decomp ints_rest
+    | CODEMUL    :: ints_rest                         ->   MUL           :: decomp ints_rest
+    | CODEDIV    :: ints_rest                         ->   DIV           :: decomp ints_rest
+    | CODEMOD    :: ints_rest                         ->   MOD           :: decomp ints_rest
+    | CODEEQ     :: ints_rest                         ->   EQ            :: decomp ints_rest
+    | CODELT     :: ints_rest                         ->   LT            :: decomp ints_rest
+    | CODENOT    :: ints_rest                         ->   NOT           :: decomp ints_rest
+    | CODEDUP    :: ints_rest                         ->   DUP           :: decomp ints_rest
+    | CODESWAP   :: ints_rest                         ->   SWAP          :: decomp ints_rest
+    | CODELDI    :: ints_rest                         ->   LDI           :: decomp ints_rest
+    | CODESTI    :: ints_rest                         ->   STI           :: decomp ints_rest
+    | CODEGETBP  :: ints_rest                         ->   GETBP         :: decomp ints_rest
+    | CODEGETSP  :: ints_rest                         ->   GETSP         :: decomp ints_rest
+    | CODEINCSP  :: m :: ints_rest                    ->   INCSP m       :: decomp ints_rest
+    | CODEGOTO   ::  lab :: ints_rest           ->   GOTO (ntolabel lab)      :: decomp ints_rest
+    | CODEIFZERO ::  lab :: ints_rest           ->   IFZERO (ntolabel lab)    :: decomp ints_rest
+    | CODEIFNZRO ::  lab :: ints_rest           ->   IFNZRO (ntolabel lab)    :: decomp ints_rest
+    | CODECALL   :: m ::  lab :: ints_rest      ->   CALL(m, ntolabel lab)   :: decomp ints_rest
+    | CODETCALL  :: m :: n ::  lab :: ints_rest ->   TCALL(m,n,ntolabel lab):: decomp ints_rest
+    | CODERET    :: m :: ints_rest                    ->   RET m         :: decomp ints_rest
+    | CODEPRINTI :: ints_rest                         ->   PRINTI        :: decomp ints_rest
+    | CODEPRINTC :: ints_rest                         ->   PRINTC        :: decomp ints_rest
+    | CODELDARGS :: ints_rest                         ->   LDARGS 0       :: decomp ints_rest
+    | CODESTOP   :: ints_rest                         ->   STOP             :: decomp ints_rest
+    | CODECSTI   :: i :: ints_rest                    ->   CSTI i         :: decomp ints_rest       
+    | CODECSTC   :: i :: ints_rest                    ->   CSTC i         :: decomp ints_rest     
+    | _                                       ->    printf "%A" ints; failwith "unknow code"
+

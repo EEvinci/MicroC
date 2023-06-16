@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Last\\Desktop\\Microc_optimize-master\\Microc_optimize-master\\microcc.fsproj": {}
+    "C:\\Users\\Last\\Desktop\\Microc\\microcc.fsproj": {}
   },
   "projects": {
-    "C:\\Users\\Last\\Desktop\\Microc_optimize-master\\Microc_optimize-master\\microcc.fsproj": {
+    "C:\\Users\\Last\\Desktop\\Microc\\microcc.fsproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Last\\Desktop\\Microc_optimize-master\\Microc_optimize-master\\microcc.fsproj",
+        "projectUniqueName": "C:\\Users\\Last\\Desktop\\Microc\\microcc.fsproj",
         "projectName": "microcc",
-        "projectPath": "C:\\Users\\Last\\Desktop\\Microc_optimize-master\\Microc_optimize-master\\microcc.fsproj",
+        "projectPath": "C:\\Users\\Last\\Desktop\\Microc\\microcc.fsproj",
         "packagesPath": "C:\\Users\\Last\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Last\\Desktop\\Microc_optimize-master\\Microc_optimize-master\\obj\\",
+        "outputPath": "C:\\Users\\Last\\Desktop\\Microc\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Last\\AppData\\Roaming\\NuGet\\NuGet.Config"

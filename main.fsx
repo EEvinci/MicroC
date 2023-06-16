@@ -15,7 +15,7 @@ run (fromFile "ex11.c") [8];; //解释执行 ex11.c
 //编译器
 #r "nuget: FsLexYacc";;
 
-#load "Absyn.fs"  "CPar.fs" "CLex.fs" "Debug.fs" "Parse.fs" "Machine.fs" "Backend.fs" "Comp.fs" "ParseAndComp.fs";;   
+#load "Absyn.fs"  "CPar.fs" "CLex.fs" "Debug.fs" "Parse.fs" "StackMachine.fs" "Backend.fs" "Comp.fs" "ParseAndComp.fs";;   
 
 //运行编译器
 open ParseAndComp;;
@@ -27,7 +27,7 @@ compileToFile (fromFile "ex4.c") "ex4";;  // 注意变量分配
 //优化编译器
 #r "nuget: FsLexYacc";;
 
-#load "Absyn.fs"  "CPar.fs" "CLex.fs" "Debug.fs" "Parse.fs" "Machine.fs" "Backend.fs" "ContComp.fs" "ParseAndContcomp.fs";;      
+#load "Absyn.fs"  "CPar.fs" "CLex.fs" "Debug.fs" "Parse.fs" "StackMachine.fs" "Backend.fs" "ContComp.fs" "ParseAndContcomp.fs";;      
 
 open ParseAndContcomp;;
 contCompileToFile (fromFile "ex11.c") "ex11.out";;

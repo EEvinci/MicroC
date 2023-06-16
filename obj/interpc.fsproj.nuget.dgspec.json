@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Last\\Desktop\\Microc_optimize-master\\Microc_optimize-master\\interpc.fsproj": {}
+    "C:\\Users\\Last\\Desktop\\Microc\\interpc.fsproj": {}
   },
   "projects": {
-    "C:\\Users\\Last\\Desktop\\Microc_optimize-master\\Microc_optimize-master\\interpc.fsproj": {
+    "C:\\Users\\Last\\Desktop\\Microc\\interpc.fsproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Last\\Desktop\\Microc_optimize-master\\Microc_optimize-master\\interpc.fsproj",
+        "projectUniqueName": "C:\\Users\\Last\\Desktop\\Microc\\interpc.fsproj",
         "projectName": "interpc",
-        "projectPath": "C:\\Users\\Last\\Desktop\\Microc_optimize-master\\Microc_optimize-master\\interpc.fsproj",
+        "projectPath": "C:\\Users\\Last\\Desktop\\Microc\\interpc.fsproj",
         "packagesPath": "C:\\Users\\Last\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Last\\Desktop\\Microc_optimize-master\\Microc_optimize-master\\obj\\",
+        "outputPath": "C:\\Users\\Last\\Desktop\\Microc\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Last\\AppData\\Roaming\\NuGet\\NuGet.Config"

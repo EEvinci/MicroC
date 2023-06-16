@@ -3,8 +3,8 @@ void main() {
   int i;
   for (i = 0; i < n; i=i+1)
   {
-    print("%d",i);
+    print i;
     continue;
-    print("%d",i);
+    print i;
   }
 }

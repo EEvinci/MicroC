@@ -1,7 +1,6 @@
 void main() {
-    int i=1;
-    char a='a';
-    print("%d",i);
-    print("%c",a);
+  int n=5;
+  if(n? 1:0){
+    print n;
+  }
 }
-

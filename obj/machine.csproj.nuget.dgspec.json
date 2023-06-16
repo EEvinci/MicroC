@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Last\\Desktop\\Microc_optimize-master\\Microc_optimize-master\\machine.csproj": {}
+    "C:\\Users\\Last\\Desktop\\Microc\\machine.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Last\\Desktop\\Microc_optimize-master\\Microc_optimize-master\\machine.csproj": {
+    "C:\\Users\\Last\\Desktop\\Microc\\machine.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Last\\Desktop\\Microc_optimize-master\\Microc_optimize-master\\machine.csproj",
+        "projectUniqueName": "C:\\Users\\Last\\Desktop\\Microc\\machine.csproj",
         "projectName": "machine",
-        "projectPath": "C:\\Users\\Last\\Desktop\\Microc_optimize-master\\Microc_optimize-master\\machine.csproj",
+        "projectPath": "C:\\Users\\Last\\Desktop\\Microc\\machine.csproj",
         "packagesPath": "C:\\Users\\Last\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Last\\Desktop\\Microc_optimize-master\\Microc_optimize-master\\obj\\",
+        "outputPath": "C:\\Users\\Last\\Desktop\\Microc\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Last\\AppData\\Roaming\\NuGet\\NuGet.Config"

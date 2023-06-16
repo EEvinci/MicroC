@@ -11,7 +11,7 @@
     <Compile Include="CPar.fs" />
     <Compile Include="CLex.fs" />
     <Compile Include="Parse.fs" />
-    <Compile Include="Machine.fs" />
+    <Compile Include="StackMachine.fs" />
     <Compile Include="Contcomp.fs" />
     <Compile Include="MicroCC.fs" />
 

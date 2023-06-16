@@ -1,17 +1,17 @@
 void main() {
     int i=1;
     i++;
-    print("%d",i);
+    print i;
     i--;
-    print("%d",i);
+    print i;
     i+=2;
-    print("%d",i);
+    print i;
     i-=2;
-    print("%d",i);
+    print i;
     i*=2;
-    print("%d",i);
+    print i;
     i/=2;
-    print("%d",i);
+    print i;
     i%=2;
-    print("%d",i);
+    print i;
 }

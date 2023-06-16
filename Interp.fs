@@ -226,7 +226,7 @@ let initEnvAndStore (topdecs: topdec list) : locEnv * funEnv * store * controlSt
         | Fundec (_, f, xs, body) :: decr -> addv decr locEnv ((f, (xs, body)) :: funEnv) store controlStat
         | VardecAndAssignment (typ,x,e) :: decr ->
             let (loc, store1) = allocate (typ, x) locEnv store  // 分配空间
-            addv decr loc funEnv store1 controlStat
+            addv decr loc funEnv store1 controlStat  //将变量添加到环境中
     // ([], 0) []  默认全局环境
     // locEnv ([],0) 变量环境 ，变量定义为空列表[],下一个空闲地址为0
     // ([("n", 1); ("r", 0)], 2)  表示定义了 变量 n , r 下一个可以用的变量索引是 2
@@ -319,20 +319,7 @@ let rec exec stmt (locEnv: locEnv) (gloEnv: gloEnv) (store: store) (controlStat:
                         (pick body)
                 loop store0 controlStat
     | Case (e,body) -> exec body locEnv gloEnv store controlStat
-    // | Switch(e,body) ->  
-    //           let (res, store1) = eval e locEnv gloEnv store
-    //           let rec choose list =
-    //             match list with
-    //             | Case(e1,body1) :: tail -> 
-    //                 let (res2, store2) = eval e1 locEnv gloEnv store1
-    //                 if res2=res then eval e1 locEnv gloEnv store1
-    //                 else choose tail
-    //             | [] -> (res,store1)
-    //             | Default( body1 ) :: tail -> 
-    //                 let(res3,store3) = exec body1 locEnv gloEnv store1 None
-    //                 choose tail
-    //           (choose body)
-    // | Case(e,body) -> exec body locEnv gloEnv store controlStat
+ 
     | Block stmts ->
 
         // 语句块 解释辅助函数 loop
@@ -394,16 +381,8 @@ and eval e locEnv gloEnv store : int * store =
     | ConstChar c    -> ((int c), store)
     | ConstString s  -> (s.Length,store)
     | Addr acc -> access acc locEnv gloEnv store
-    // Print函数
-    | Print (op , e1) ->    let (i1,store1) = 
-                                eval e1 locEnv gloEnv store
-                            let res = 
-                                match op with
-                                | "%c"   -> (printf "%c " (char i1); i1)
-                                | "%d"   -> (printf "%d " i1; i1)  
-                                | "%s"   -> (printf "%s " (string i1); i1) 
-                                | _ -> failwith ("unknown primitive " + op)
-                            (res, store1)
+    
+    
     | Prim1 (ope, e1) ->
         let (i1, store1) = eval e1 locEnv gloEnv store
 
